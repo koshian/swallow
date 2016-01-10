@@ -1,5 +1,11 @@
 require "swallow/version"
+require "swallow/cli"
+require "swallow/parser"
+require 'cgi'
 
 module Swallow
-  # Your code goes here...
+  def parse(string)
+    p = Parser.new(string)
+    p.to_html
+  end
 end
