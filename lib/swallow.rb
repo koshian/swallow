@@ -4,8 +4,10 @@ require "swallow/parser"
 require 'cgi'
 
 module Swallow
-  def parse(string)
+  def self.parse(string)
     p = Parser.new(string)
+    p.tokenize
+    p.parse
     p.to_html
   end
 end
