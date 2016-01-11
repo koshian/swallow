@@ -10,4 +10,11 @@ module Swallow
     p.parse
     p.to_html
   end
+
+  def self.rip(string)
+    p = Ripper.new(string)
+    p.tokenize
+    p.parse
+    p.to_html
+  end
 end
