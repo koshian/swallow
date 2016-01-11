@@ -13,7 +13,7 @@ module Swallow
     end
 
     def self.parse(file)
-      Swallow.parse(file)
+      print Swallow.parse(file)
     end
   end
 end
