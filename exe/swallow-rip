@@ -1,0 +1,6 @@
+#!/usr/bin/env ruby
+
+require "swallow"
+
+Swallow::CLI.rip_start
+
