@@ -65,6 +65,68 @@ describe Swallow do
     test_ripper_token_expect(src, rst)
   end
 
+  it 'Tokenize test 9' do
+    src = '<html>
+             <title>Done is better than perfect.</title>
+             <body>
+             <!-- end-template: header.html -->
+             <!-- bigen-template: body.html -->
+               <h1>Done is better than perfect.</h1>
+               <!-- bigen-template: footer.html -->
+               <hr>
+               <address>user@example.org</address>
+             </body>
+           </html>'
+    rst = [["<html>
+             <title>Done is better than perfect.</title>
+             <body>
+             ", :text],
+           ["header.html", :end],
+           ["\n             ", :text],
+           ["body.html", :bigen],
+           ["
+               <h1>Done is better than perfect.</h1>
+               ", :text],
+           ["footer.html", :bigen],
+           ["
+               <hr>
+               <address>user@example.org</address>
+             </body>
+           </html>", :text]]
+    test_ripper_token_expect(src, rst)
+  end
+
+  it 'Tokenize test 10' do
+    src = '<html>
+             <title>Done is better than perfect.</title>
+             <body>
+             <!-- bigen-template: body2.html -->
+               <h1>Done is better than perfect.</h1>
+               <!-- bigen-template: footer2.html -->
+               <hr>
+               <address>user@example.org</address>
+               <!-- end-template: footer2.html -->
+             </body>
+           </html>'
+    rst = [["<html>
+             <title>Done is better than perfect.</title>
+             <body>
+             ", :text],
+           ["body2.html", :bigen],
+           ["
+               <h1>Done is better than perfect.</h1>
+               ", :text],
+           ["footer2.html", :bigen],
+           ["
+               <hr>
+               <address>user@example.org</address>
+               ", :text],
+           ["footer2.html", :end],
+           ["
+             </body>
+           </html>", :text]]
+    test_ripper_token_expect(src, rst)
+  end
   # it 'Tokenize test 99' do
   #   src = '<!-- begin-template: template-name --> <span>Done is better than perfect. </span> <!-- end-template: variable -->'
   #   rst = {'type' => 'template', 'name' => ' <span>Done is better than perfect. </span> '}
@@ -104,9 +166,27 @@ describe Swallow do
                <hr>
                <address>user@example.org</address>
              </body>
-           <html>'
+           </html>'
     Swallow.rip(src)
     File.exist?('header.html').should == true
+    File.exist?('body.html').should == true
+    File.exist?('footer.html').should == true
+  end
+
+  it 'Generate layout test 1' do
+    src = '<html>
+             <title>Done is better than perfect.</title>
+             <body>
+             <!-- bigen-template: body2.html -->
+               <h1>Done is better than perfect.</h1>
+               <!-- bigen-template: footer2.html -->
+               <hr>
+               <address>user@example.org</address>
+               <!-- end-template: footer2.html -->
+             </body>
+           </html>'
+    Swallow.rip(src)
+    File.exist?('layout.html').should == true
     File.exist?('body.html').should == true
     File.exist?('footer.html').should == true
   end

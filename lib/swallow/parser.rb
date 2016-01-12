@@ -7,7 +7,7 @@ module Swallow
     BIGEN_COMMENT = Regexp.new('<!--\s*bigen\s*:\s*(.*?)\s+-->')
     END_COMMENT = Regexp.new('<!--\s*end\s*:\s*(.*?)\s+-->')
 
-    @tokens = Array.new
+    @tokens = []
 
     def initialize(string)
       @source = string
@@ -15,7 +15,7 @@ module Swallow
 
     def tokenize(source = @source)
       s = StringScanner.new(source)
-      @tokens = Array.new
+      @tokens = []
       until s.eos?
         if s.scan(look_behind_comment_tag)
           @tokens.push [s[0], :text] if s[0].size > 0
@@ -34,8 +34,8 @@ module Swallow
     end
 
     def parse(tokens = @tokens)
-      result = Array.new
-      cache = Array.new
+      result = []
+      cache = []
       flag = false
 
       tokens.each do |token|
@@ -69,7 +69,7 @@ module Swallow
     end
 
     def to_html(tokens = @tokens)
-      CGI::pretty(self.parse(tokens).join('').to_s)
+      CGI.pretty(parse(tokens).join('').to_s)
     end
 
     def look_behind_comment_tag
@@ -91,40 +91,52 @@ module Swallow
     BIGEN_COMMENT = Regexp.new('<!--\s*bigen-template\s*:\s*(.*?)\s+-->')
     END_COMMENT = Regexp.new('<!--\s*end-template\s*:\s*(.*?)\s+-->')
 
-    @tokens = Array.new
+    LAYOUT_NAME = 'layout.html'
+
+    @tokens = []
 
     def parse(tokens = @tokens)
-      result = Hash.new
-      cache = Array.new
+      result = {}
+      cache = []
       name = nil
+      clear_cache = lambda do |n, c|
+        c.each do |i|
+          result.key?(n) || result[n] = []
+          result[name].push i
+        end
+        cache.clear
+      end
 
       tokens.each do |token|
         if token[1] == :bigen
+          name = LAYOUT_NAME
+          clear_cache.call(name, cache)
           name = token[0]
+          next
         elsif token[1] == :end
           name = token[0] unless name
-          cache.each do |c|
-            result.has_key?(name) || result[name] = Array.new
-            result[name].push c
-          end
-          cache.clear
+          clear_cache.call(name, cache)
+          name = nil
+          next
         end
 
-        unless name
-          cache.push token[0]
-        else
-          result.has_key?(name) || result[name] = Array.new
+        if name
+          result.key?(name) || result[name] = []
           result[name].push token[0]
+        else
+          cache.push token[0]
         end
       end
 
+      name = LAYOUT_NAME
+      clear_cache.call(name, cache)
       result
     end
 
     def to_html(tokens = @tokens)
-      self.parse(tokens).each do |name, content|
+      parse(tokens).each do |name, content|
         content_string = content.join('')
-        open(name, 'w'){|f| f.print content_string }
+        open(name, 'w') { |f| f.print content_string }
       end
     end
 
