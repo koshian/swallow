@@ -1,6 +1,6 @@
 module Swallow
   class CLI
-    def cat_file
+    def self.cat_file
       ARGV.size < 1 && self.help
       file = File.exist?(ARGV[0]) ? open(ARGV[0]).read : STDIN.read
       file.size <= 0 && self.help
@@ -12,7 +12,7 @@ module Swallow
       self.parse(file)
     end
 
-    def self.ripper_start
+    def self.rip_start
       file = cat_file
       self.rip(file)
     end
@@ -27,7 +27,7 @@ module Swallow
     end
 
     def self.rip(file)
-      print Swallow.rip(file)
+      Swallow.rip(file)
     end
   end
 end
