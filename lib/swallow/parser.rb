@@ -1,11 +1,14 @@
 require 'strscan'
+require 'cgi'
 
 module Swallow
   class Parser
     LOOK_BEHIND_COMMENT_TAG =
-      Regexp.new('.*?(?=<!--\s*(bigen|end)\s*:)', Regexp::MULTILINE)
-    BIGEN_COMMENT = Regexp.new('<!--\s*bigen\s*:\s*(.*?)\s+-->')
-    END_COMMENT = Regexp.new('<!--\s*end\s*:\s*(.*?)\s+-->')
+      Regexp.new('.*?(?=\s*<!--\s*(bigen|end)\s*:)', Regexp::MULTILINE)
+    BIGEN_COMMENT = Regexp.new('\s*<!--\s*bigen\s*:\s*(.*?)\s+-->\s*',
+                               Regexp::MULTILINE)
+    END_COMMENT = Regexp.new('\s*<!--\s*end\s*:\s*(.*?)\s+-->\s*',
+                             Regexp::MULTILINE)
 
     @tokens = []
 
@@ -14,7 +17,7 @@ module Swallow
     end
 
     def tokenize(source = @source)
-      s = StringScanner.new(source)
+      s = StringScanner.new(CGI.pretty(source.gsub(/>[\s\n]+</, '><')))
       @tokens = []
       until s.eos?
         if s.scan(look_behind_comment_tag)
@@ -69,7 +72,7 @@ module Swallow
     end
 
     def to_html(tokens = @tokens)
-      CGI.pretty(parse(tokens).join('').to_s)
+      parse(tokens).join('').to_s
     end
 
     def look_behind_comment_tag
