@@ -17,7 +17,7 @@ module Swallow
     end
 
     def tokenize(source = @source)
-      s = StringScanner.new(CGI.pretty(source.gsub(/>[\s\n]+</, '><')))
+      s = StringScanner.new(CGI.pretty(source.gsub(/>\s+</m, '><')))
       @tokens = []
       until s.eos?
         if s.scan(look_behind_comment_tag)
