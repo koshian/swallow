@@ -6,30 +6,30 @@ describe Swallow do
   end
 
   it 'Tokenize test 1' do
-    src = '<!-- bigen: <%= variable %> -->'
-    rst = [['<%= variable %>', :bigen]]
+    src = '<!-- begin: <%= variable %> -->'
+    rst = [['<%= variable %>', :begin]]
 
     test_token_expect(src, rst)
   end
 
   it 'Tokenize test 2' do
-    src = '<!-- bigen: <?php echo $variable ?> -->'
-    rst = [['<?php echo $variable ?>', :bigen]]
+    src = '<!-- begin: <?php echo $variable ?> -->'
+    rst = [['<?php echo $variable ?>', :begin]]
 
     test_token_expect(src, rst)
   end
 
   it 'Tokenize test 4' do
-    src = '<!-- bigen: variable --> Done is better than perfect. <!-- end: variable -->'
-    rst = [['variable', :bigen],
+    src = '<!-- begin: variable --> Done is better than perfect. <!-- end: variable -->'
+    rst = [['variable', :begin],
            ["Done is better than perfect.", :text],
            ['variable', :end]]
     test_token_expect(src, rst)
   end
 
   it 'Tokenize test 5' do
-    src = '<!-- bigen: variable --> Done is <strong>better</strong> than perfect. <!-- end: variable -->'
-    rst = [['variable', :bigen],
+    src = '<!-- begin: variable --> Done is <strong>better</strong> than perfect. <!-- end: variable -->'
+    rst = [['variable', :begin],
            ['Done is 
 <strong>
   better
@@ -49,22 +49,22 @@ describe Swallow do
   end
 
   it 'Tokenize test 7' do
-    src = '<!-- bigen:
+    src = '<!-- begin:
                   variable
              -->
              Done is better than perfect.
            <!-- end:
                   variable
               -->'
-    rst = [['variable', :bigen],
+    rst = [['variable', :begin],
            ['Done is better than perfect.', :text],
            ['variable', :end]]
     test_token_expect(src, rst)
   end
 
   it 'Tokenize test 8' do
-    src = '<!-- bigen-template: variable --> Done is better than perfect. <!-- end-template: variable -->'
-    rst = [['variable', :bigen],
+    src = '<!-- begin-template: variable --> Done is better than perfect. <!-- end-template: variable -->'
+    rst = [['variable', :begin],
            ["\n Done is better than perfect. \n", :text],
            ['variable', :end],
            ["\n", :text]]
@@ -76,9 +76,9 @@ describe Swallow do
              <title>Done is better than perfect.</title>
              <body>
              <!-- end-template: header.html -->
-             <!-- bigen-template: body.html -->
+             <!-- begin-template: body.html -->
                <h1>Done is better than perfect.</h1>
-               <!-- bigen-template: footer.html -->
+               <!-- begin-template: footer.html -->
                <hr>
                <address>user@example.org</address>
              </body>
@@ -91,13 +91,13 @@ describe Swallow do
     ", :text],
            ["header.html", :end],
            ["\n    ", :text],
-           ["body.html", :bigen],
+           ["body.html", :begin],
            ["
     <h1>
       Done is better than perfect.
     </h1>
     ", :text],
-           ["footer.html", :bigen],
+           ["footer.html", :begin],
            ["
     <hr>
     <address>
@@ -113,9 +113,9 @@ describe Swallow do
     src = '<html>
              <title>Done is better than perfect.</title>
              <body>
-             <!-- bigen-template: body2.html -->
+             <!-- begin-template: body2.html -->
                <h1>Done is better than perfect.</h1>
-               <!-- bigen-template: footer2.html -->
+               <!-- begin-template: footer2.html -->
                <hr>
                <address>user@example.org</address>
                <!-- end-template: footer2.html -->
@@ -127,13 +127,13 @@ describe Swallow do
   </title>
   <body>
     ", :text],
-           ["body2.html", :bigen],
+           ["body2.html", :begin],
            ["
     <h1>
       Done is better than perfect.
     </h1>
     ", :text],
-           ["footer2.html", :bigen],
+           ["footer2.html", :begin],
            ["
     <hr>
     <address>
@@ -149,7 +149,7 @@ describe Swallow do
   end
 
   it 'Parse test 1' do
-    src = [['<?php echo $variable ?>', :bigen],
+    src = [['<?php echo $variable ?>', :begin],
            [' Done is better than perfect. ', :text],
            ['<?php echo $variable ?>', :end]]
     rst = ['<?php echo $variable ?>']
@@ -157,7 +157,7 @@ describe Swallow do
   end
 
   it 'Parse test 2' do
-    src = [['<?php echo $variable ?>', :bigen],
+    src = [['<?php echo $variable ?>', :begin],
            [' Done is better than perfect. ', :text]]
     rst = ['<?php echo $variable ?>', ' Done is better than perfect. ']
     test_parse_expect(src, rst)
@@ -175,9 +175,9 @@ describe Swallow do
              <title>Done is better than perfect.</title>
              <body>
              <!-- end-template: header.html -->
-             <!-- bigen-template: body.html -->
+             <!-- begin-template: body.html -->
                <h1>Done is better than perfect.</h1>
-               <!-- bigen-template: footer.html -->
+               <!-- begin-template: footer.html -->
                <hr>
                <address>user@example.org</address>
              </body>
@@ -192,9 +192,9 @@ describe Swallow do
     src = '<html>
              <title>Done is better than perfect.</title>
              <body>
-             <!-- bigen-template: body2.html -->
+             <!-- begin-template: body2.html -->
                <h1>Done is better than perfect.</h1>
-               <!-- bigen-template: footer2.html -->
+               <!-- begin-template: footer2.html -->
                <hr>
                <address>user@example.org</address>
                <!-- end-template: footer2.html -->

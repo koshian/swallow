@@ -4,8 +4,8 @@ require 'cgi'
 module Swallow
   class Parser
     LOOK_BEHIND_COMMENT_TAG =
-      Regexp.new('.*?(?=\s*<!--\s*(bigen|end)\s*:)', Regexp::MULTILINE)
-    BIGEN_COMMENT = Regexp.new('\s*<!--\s*bigen\s*:\s*(.*?)\s+-->\s*',
+      Regexp.new('.*?(?=\s*<!--\s*(begin|end)\s*:)', Regexp::MULTILINE)
+    BEGIN_COMMENT = Regexp.new('\s*<!--\s*begin\s*:\s*(.*?)\s+-->\s*',
                                Regexp::MULTILINE)
     END_COMMENT = Regexp.new('\s*<!--\s*end\s*:\s*(.*?)\s+-->\s*',
                              Regexp::MULTILINE)
@@ -22,8 +22,8 @@ module Swallow
       until s.eos?
         if s.scan(look_behind_comment_tag)
           @tokens.push [s[0], :text] if s[0].size > 0
-          if s.scan(bigen_comment)
-            @tokens.push [s[1], :bigen]
+          if s.scan(begin_comment)
+            @tokens.push [s[1], :begin]
           else
             s.scan(end_comment)
             @tokens.push [s[1], :end]
@@ -42,7 +42,7 @@ module Swallow
       flag = false
 
       tokens.each do |token|
-        if token[1] == :bigen
+        if token[1] == :begin
           flag = true
 
           if cache.size > 0
@@ -79,8 +79,8 @@ module Swallow
       LOOK_BEHIND_COMMENT_TAG
     end
 
-    def bigen_comment
-      BIGEN_COMMENT
+    def begin_comment
+      BEGIN_COMMENT
     end
 
     def end_comment
@@ -90,8 +90,8 @@ module Swallow
 
   class Ripper < Parser
     LOOK_BEHIND_COMMENT_TAG =
-      Regexp.new('.*?(?=<!--\s*(bigen|end)-template\s*:)', Regexp::MULTILINE)
-    BIGEN_COMMENT = Regexp.new('<!--\s*bigen-template\s*:\s*(.*?)\s+-->')
+      Regexp.new('.*?(?=<!--\s*(begin|end)-template\s*:)', Regexp::MULTILINE)
+    BEGIN_COMMENT = Regexp.new('<!--\s*begin-template\s*:\s*(.*?)\s+-->')
     END_COMMENT = Regexp.new('<!--\s*end-template\s*:\s*(.*?)\s+-->')
 
     LAYOUT_NAME = 'layout.html'
@@ -111,7 +111,7 @@ module Swallow
       end
 
       tokens.each do |token|
-        if token[1] == :bigen
+        if token[1] == :begin
           name = LAYOUT_NAME
           clear_cache.call(name, cache)
           name = token[0]
@@ -147,8 +147,8 @@ module Swallow
       LOOK_BEHIND_COMMENT_TAG
     end
 
-    def bigen_comment
-      BIGEN_COMMENT
+    def begin_comment
+      BEGIN_COMMENT
     end
 
     def end_comment

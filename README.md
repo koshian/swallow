@@ -1,6 +1,6 @@
 # Swallow
 
-Swallow parse a html with bigen/end comments. like this.
+Swallow parse a html with begin/end comments. like this.
 
 ```html
 <html>
@@ -8,7 +8,7 @@ Swallow parse a html with bigen/end comments. like this.
    <body>
      <h1>Done is better than perfect.</h1>
      <article>
-       <!-- bigen: <%= yeild %> -->
+       <!-- begin: <%= yeild %> -->
        <p>test article</p>
        <!-- end: <%= yeild %> -->
      </article>
@@ -50,9 +50,9 @@ And also like this:
   <title>Done is better than perfect.</title>
    <body>
    <!-- end-template: header.html -->
-   <!-- bigen-template: body.html -->
+   <!-- begin-template: body.html -->
      <h1>Done is better than perfect.</h1>
-     <!-- bigen-template: footer.html -->
+     <!-- begin-template: footer.html -->
      <hr>
      <address>user@example.org</address>
    </body>
@@ -89,9 +89,9 @@ And swallow-rip can generate Rails like layout.html.
 <html>
   <title>Done is better than perfect.</title>
   <body>
-  <!-- bigen-template: body.html -->
+  <!-- begin-template: body.html -->
     <h1>Done is better than perfect.</h1>
-    <!-- bigen-template: footer.html -->
+    <!-- begin-template: footer.html -->
     <hr>
     <address>user@example.org</address>
     <!-- end-template: footer.html -->
